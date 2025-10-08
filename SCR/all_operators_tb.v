@@ -1,6 +1,6 @@
-
+`include "all_operators.v" 
 `timescale 1ns/1ps
-`include "alu4.v" 
+
 
 module alu4_tb;
 
