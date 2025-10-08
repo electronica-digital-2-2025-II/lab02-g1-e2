@@ -3,7 +3,7 @@ module xor1 (
     input  wire b,
     output wire y
 );
-    assign y = a ^ b;  // synthesizable
+    assign y = a ^ b;  
 endmodule
 
 /*

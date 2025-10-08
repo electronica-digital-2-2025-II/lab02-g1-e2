@@ -6,9 +6,9 @@ module multiplier_tb();
     reg        clk_tb;
     reg        rst_tb;
     reg        init_tb;
-    reg  [2:0] MD_tb;
-    reg  [2:0] MR_tb;
-    wire [5:0] PP_tb;
+    reg  [3:0] MD_tb;
+    reg  [3:0] MR_tb;
+    wire [7:0] PP_tb;
     wire       done_tb;
 
     initial clk_tb = 1'b0;
@@ -47,7 +47,7 @@ module multiplier_tb();
     end
 
     // tarea para ejecutar un caso de prueba con timeout (en ciclos de reloj)
-    task run_case(input [2:0] multiplicando, input [2:0] multiplicador, input [5:0] esperado);
+    task run_case(input [3:0] multiplicando, input [3:0] multiplicador, input [7:0] esperado);
         integer timeout;
         begin
             // colocar operandos
@@ -93,8 +93,8 @@ module multiplier_tb();
     initial begin
         // Inicialización
         init_tb = 1'b0;
-        MD_tb   = 3'd0;
-        MR_tb   = 3'd0;
+        MD_tb   = 4'd0;
+        MR_tb   = 4'd0;
         rst_tb  = 1'b1;   // aplicar reset síncrono al inicio
 
         // Mantener rst activo unos ciclos
@@ -107,16 +107,16 @@ module multiplier_tb();
 
         // Tests (multiplicando x multiplicador) -> esperado
         // Test 1: 5 x 3 = 15
-        run_case(3'd5, 3'd3, 6'd15);
+        run_case(4'd5, 4'd3, 8'd15);
 
         // Test 2: 7 x 7 = 49
-        run_case(3'd7, 3'd7, 6'd49);
+        run_case(4'd7, 4'd7, 8'd49);
 
         // Test 3: 6 x 2 = 12
-        run_case(3'd6, 3'd2, 6'd12);
+        run_case(4'd6, 4'd2, 8'd12);
 
         // Test 4: 0 x 7 = 0
-        run_case(3'd0, 3'd7, 6'd0);
+        run_case(4'd0, 4'd7, 8'd0);
 
         $display("=== Fin de tests ===");
         #50;
