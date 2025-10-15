@@ -1,4 +1,4 @@
-`include "sum1b.v"
+
 
 module sum4b (
     input [3:0] A,

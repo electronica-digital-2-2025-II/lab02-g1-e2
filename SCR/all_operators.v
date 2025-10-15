@@ -1,8 +1,8 @@
 //`include "sum4b.v"
-`include "subtraction4b.v"
-`include "multiplier4b.v"
-`include "shifter4b.v"
-`include "xorNb.v"
+//`include "subtraction4b.v"
+//`include "multiplier4b.v"
+//`include "shifter4b.v"
+//`include "xorNb.v"
 
 module adder4_if (
     input  wire [3:0] A, B,
