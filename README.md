@@ -29,7 +29,9 @@ Control: Desde unidad de control del procesador
 Banderas: Hacia registro de estado (PSW)
 ### Descripción
 
+La ALU recibe dos operandos de 4 bits y un código de operación, procesa los datos a través de la unidad funcional correspondiente y genera un resultado junto con indicadores de estado. Las operaciones aritméticas utilizan representación en complemento a 2 para manejo de números con signo.
 
+Este diseño representa una implementación prototipada que demuestra los principios fundamentales del procesamiento digital de datos, sirviendo como base para comprender unidades computacionales más complejas.
 ### Diagrama
 A continuación el diseño implementado a través de diagrama de flujo:
 
