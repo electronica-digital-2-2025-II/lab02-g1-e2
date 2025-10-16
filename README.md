@@ -160,6 +160,13 @@ Se manejan las siguientes señales de control en la ALU:
 | `overflow` | Salida | LED indicador de desbordamiento |
 | `zero` | Salida | LED indicador de resultado nulo |
 
+A continuación se muestra el diagrama RTL, en donde se puede ver el hardware de manera más clara:
+
+<p align="center">
+  <img src="/Imagenes/ALUschematic_rotated.pdf" alt="Diagrama RTL">
+</p>
+
+
 Se creó un archivo de restricciones **(`.xdc`)** para asignar los pines de la FPGA.  
 Se usaron los siguientes:
 
