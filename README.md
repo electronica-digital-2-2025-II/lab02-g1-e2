@@ -3,7 +3,11 @@
 # Lab02 - Unidad Aritmético-Lógica.
 
 # Integrantes
-David Esteban Becerra López
+
+- [Anderson Camilo Rosero Yela](https://github.com/Kuper0173)
+- [Laura Daniela Zambrano Guacheta](https://github.com/234laura)
+- [David Esteban Becerra López](https://github.com/Quadrx)
+- [José Luis Pulido Fonseca](https://github.com/jpulidof) 
 
 # Informe
 
@@ -202,3 +206,5 @@ Los resultados observados en las ondas digitales y en la tabla de pruebas valida
 No se presentaron comportamientos que den a entender fallas en el clock o resultados incoherentes en comparación a lo establecido en los test bench, lo que demuestra la estabilidad del sistema bajo distintas condiciones de entrada.
 - En comparación a la práctica anterior un diagrama FSM no fue necesario realizarlo, desde que su lógica al ser compleja al implementar una ALU, se empleo un ASM para explicar su funcionamiento desde las operaciones de control y no la explicación individual de cada módulo.
 ## Referencias
+[1] Hennessy, J. L., & Patterson, D. A. (2019). A New Golden Age for Computer Architecture. Communications of the ACM.
+[2] Universidad Nacional de Colombia *Guía de laboratorio 2: Unidad Aritmético-Lógica (ALU).*, 2025
