@@ -2,9 +2,9 @@ module multiplier(
     input  wire       init,    // señal de inicio (nivel o pulso) tratada síncronamente
     input  wire       clk,
     input  wire       rst,     // reset síncrono, activo 1
-    input  wire [3:0] MD,      // multiplicando (3 bits)
-    input  wire [3:0] MR,      // multiplicador (3 bits)
-    output reg  [7:0] PP,      // producto parcial / resultado (6 bits)
+    input  wire [3:0] A,      // multiplicando (3 bits)
+    input  wire [3:0] B,      // multiplicador (3 bits)
+    output reg  [7:0] Y,      // producto parcial / resultado (6 bits)
     output reg        done
     );
 
@@ -18,11 +18,11 @@ module multiplier(
     reg [2:0] fsm_state;
     reg [2:0] next_state;
 
-    reg [7:0] A;        // acumulador desplazable (A << 1 cada SHIFT)
-    reg [3:0] B;        // multiplicador (se desplaza a la derecha)
+    reg [7:0] a;        // acumulador desplazable (A << 1 cada SHIFT)
+    reg [3:0] b;        // multiplicador (se desplaza a la derecha)
     reg [1:0] iter;     // cuenta 0..2 (3 iteraciones)
 
-    wire LSB_B = B[0];
+    wire LSB_B = b[0];
 
     // Lógica combinacional de transición (NO considera init aquí;
     // el reinicio/arranque por init se maneja síncronamente)
@@ -43,18 +43,18 @@ module multiplier(
         if (rst) begin
             // reset síncrono: dejar todo en estado inicial
             fsm_state <= START;
-            PP        <= 8'd0;
-            A         <= 8'd0;
-            B         <= 4'd0;
+            Y        <= 8'd0;
+            a         <= 8'd0;
+            b         <= 4'd0;
             iter      <= 2'd0;
             done      <= 1'b0;
         end else if (init) begin
             // Opción B: FORZAR reinicio/recarga síncrona en el siguiente flanco de reloj.
             // Colocamos la FSM en CHECK para comenzar la ejecución inmediatamente.
             fsm_state <= CHECK;
-            PP        <= 8'd0;
-            A         <= {4'b0000, MD}; // A inicia con MD en los bits bajos
-            B         <= MR;
+            Y        <= 8'd0;
+            a         <= {4'b0000, A}; // A inicia con MD en los bits bajos
+            b         <= B;
             iter      <= 2'd0;
             done      <= 1'b0;
         end else begin
@@ -75,13 +75,13 @@ module multiplier(
 
                 ADD: begin
                     // sumar A (6 bits) a PP
-                    PP <= PP + A;
+                    Y <= Y + a;
                 end
 
                 SHIFT: begin
                     // desplazar A a la izquierda (multiplica por 2) y B a la derecha
-                    A    <= A << 1;
-                    B    <= B >> 1;
+                    a    <= a << 1;
+                    b    <= b >> 1;
                     iter <= iter + 2'd1;
                 end
 
