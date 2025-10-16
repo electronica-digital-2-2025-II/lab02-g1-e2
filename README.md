@@ -3,14 +3,22 @@
 # Lab02 - Unidad Aritmético-Lógica.
 
 # Integrantes
-
+David Esteban Becerra López
 
 # Informe
 
 Indice:
 
-1. [Diseño implementado](#diseño-implementado)
-Lo siguiente a evaluar es el diseño y lógica implementada para desarrollar la ALU, como es sabido la ALU tiene algo importante y es el flujo de datos, esto es importante porque a pesar de tener los módulos que comprenden el sistema para efectuar las diferentes operaciones, se volvera tedioso no poder elegir cual función realizar, para eso es importante una etapa de codificación, la ejecución, selección y actualización que sera en este caso el overflow o salida zero.
+
+
+
+2. [Simulaciones](#simulaciones)
+3. [Implementación](#implementación)
+4. [Conclusiones](#conclusiones)
+5. [Referencias](#referencias)
+
+## Diseño implementado
+Lo siguiente a evaluar es el diseño y lógica implementada para desarrollar la ALU, como es sabido la ALU tiene comprende algo fundamental llamado el flujo de datos, esto es importante porque a pesar de tener los módulos que comprenden el sistema para efectuar las diferentes operaciones, se volvera tedioso no poder elegir cual función realizar, para eso es importante una etapa de codificación, la ejecución, selección y actualización que sera en este caso el overflow o salida zero.
 
 Dicho lo anterior es necesario en la construcción de la ALU un sistema de banderas que contemple entradas de control y salidas que exceden el numero de bits esto es conseguido gracias a las conexiones Típicas como: 
 
@@ -21,7 +29,17 @@ Salidas: Hacia registros de propósito general
 Control: Desde unidad de control del procesador
 
 Banderas: Hacia registro de estado (PSW)
+### Descripción
 
+El estado inicial esta a la espera de la entrada de 4 bits de A y B, donde es esperado las entradas de control, el op code, señal de reloj, señal de reset y señal de inicio, esta sección  solo marca las entradas de interés en la ALU.
+
+El Op code se conectara al Mux de selección de Resultados, previo al ingreso de la operación cada operación esta codificada, y como son 5 operaciones el número de bits de entrada es de 3, una vez ingresado la entrada esto llevara al modulo respectivo y como es claro cada modulo opera bajo una lógica de estados diferente.
+
+Después de eso cada módulo operara bajo una lógica diferente y su resultado podra variar de numero de bits en la entrada como se observó en la práctica 01 con el multiplicador de 4 bits, sin embargo se agregaron dos condiciones de entrada que son el overflow y el zero encerrados en el recuadro llamado Comparador de banderas. Se determinara si la entrada es mayor a 5 bits y de ser asi se activara el overflow para abarcar mas bits para representar la entrada, y en caso de ser 0 solo se activara zero.
+
+Con los datos guardados se guardaran en el registros de resultados donde luego seran representados en las salidas de ALU para dar por determinado el ciclo de las operaciones.
+
+### Diagrama
 
 A continuación el diseño implementado a través de diagrama de flujo:
 
@@ -30,25 +48,11 @@ A continuación el diseño implementado a través de diagrama de flujo:
 </p>
 
 
-En inicio vemos que el estado inicial esta a la espera de la entrada de 4 bits de A y B, y vemos como es esperado las entradas de control, el op code, señal de reloj, señal de reset y señal de inicio, este recuadro amarillo solo marca las entradas de interés en la ALU.
+La Unidad Aritmético-Lógica implementada representa el núcleo computacional fundamental de cualquier procesador, diseñada para fines prototipado. Esta ALU opera con datos de 4 bits y ejecuta cinco operaciones esenciales mediante un diseño modular que combina componentes combinacionales y secuenciales.
 
-Una a destacar es el Op code que se conectara al Mux de selección de Resultados, previo al ingreso de la operación cada operación esta codificada, y como son 5 operaciones el número de bits de entrada es de 3, una vez ingresado la entrada esto llevara al modulo respectivo y como es claro cada modulo opera bajo una lógica de estados diferente.
+En el diagrama se contempla la codificación, la selección, comparación para las flags determinadas (Overflow en caso de que el resultado sea mas de 5 bits, y zero en caso de que la respuesta sea 0) el registro aunque en este caso no confundir con un banco de registro y la salida de ALU, dado que la lógica ASM solo se remonta a condicionales y test bench especificos para cada módulo, el diagrama solo deja ver en claro como la ALU es el centro de control que conecta a todos los centros de operación y contempla en cada caso resultados que excedan los parámetros de cada función a realizar.
 
-Después de eso cada módulo operara bajo una lógica diferente y su resultado podra variar de numero de bits en la entrada como se observó en la práctica 01 con el multiplicador de 4 bits, sin embargo se agregaron dos condiciones de entrada que son el overflow y el zero encerrados en el recuadro llamado Comparador de banderas. Se determinara si la entrada es mayor a 5 bits y de ser asi se activara el overflow para abarcar mas bits para representar la entrada, y en caso de ser 0 solo se activara zero.
-
-Con los datos guardados se guardaran en el registros de resultados donde luego seran representados en las salidas de ALU para dar por determinado el ciclo de las operaciones.
-
-2. [Simulaciones](#simulaciones)
-3. [Implementación](#implementación)
-4. [Conclusiones](#conclusiones)
-5. [Referencias](#referencias)
-
-## Diseño implementado
-
-### Descripción
-
-### Diagrama
-
+Como aspecto a resaltar desde el mismo estados inicial salen las señales con las que opera la lógica secuencial.
 ## Simulaciones
 
 A continuación se presentan las simulaciones realizadas para la verificación funcional de la **Unidad Aritmético-Lógica (ALU) de 4 bits**.  
@@ -122,5 +126,14 @@ La salida `Y[7:0]` muestra el resultado de la operación, acompañado de las ban
 ## Implementación
 
 ## Conclusiones
+- La implementación de la ALU bajo una arquitectura modular permitió verificar el funcionamiento individual de cada operación (suma, resta, XOR, corrimiento y multiplicación) y su correcta integración en un único sistema controlado mediante el opcode.
+El flujo de datos y la lógica de control fueron correctamente definidos, permitiendo la selección y ejecución ordenada de las operaciones.
 
+- La incorporación de las banderas overflow y zero demostró ser fundamental para la interpretación del resultado de las operaciones. overflow permitió identificar resultados fuera del rango representable en numeros mayores 4 bits.
+
+- Debido a que la ALU fue diseñada para operar con datos de 4 bits, se observaron fenómenos esperados como el truncamiento de resultados en operaciones de multiplicación y la representación en complemento a dos para valores negativos.
+- Las simulaciones realizadas en GTKWave confirmaron la coherencia temporal y lógica del diseño.
+Los resultados observados en las ondas digitales y en la tabla de pruebas validan el funcionamiento esperado de cada operación y de las banderas asociadas.
+No se presentaron comportamientos que den a entender fallas en el clock o resultados incoherentes en comparación a lo establecido en los test bench, lo que demuestra la estabilidad del sistema bajo distintas condiciones de entrada.
+- En comparación a la práctica anterior un diagrama FSM no fue necesario realizarlo, desde que su lógica al ser compleja al implementar una ALU, se empleo un ASM para explicar su funcionamiento desde las operaciones de control y no la explicación individual de cada módulo.
 ## Referencias
