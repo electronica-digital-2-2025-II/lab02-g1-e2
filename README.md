@@ -10,34 +10,6 @@
 Indice:
 
 1. [Diseño implementado](#diseño-implementado)
-Lo siguiente a evaluar es el diseño y lógica implementada para desarrollar la ALU, como es sabido la ALU tiene algo importante y es el flujo de datos, esto es importante porque a pesar de tener los módulos que comprenden el sistema para efectuar las diferentes operaciones, se volvera tedioso no poder elegir cual función realizar, para eso es importante una etapa de codificación, la ejecución, selección y actualización que sera en este caso el overflow o salida zero.
-
-Dicho lo anterior es necesario en la construcción de la ALU un sistema de banderas que contemple entradas de control y salidas que exceden el numero de bits esto es conseguido gracias a las conexiones Típicas como: 
-
-Entradas: Desde banco de registros o memoria
-
-Salidas: Hacia registros de propósito general
-
-Control: Desde unidad de control del procesador
-
-Banderas: Hacia registro de estado (PSW)
-
-
-A continuación el diseño implementado a través de diagrama de flujo:
-
-<p align="center">
-  <img src="/Imagenes/K1.pdf" alt="Diagrama de Flujo" width="60%">
-</p>
-
-
-En inicio vemos que el estado inicial esta a la espera de la entrada de 4 bits de A y B, y vemos como es esperado las entradas de control, el op code, señal de reloj, señal de reset y señal de inicio, este recuadro amarillo solo marca las entradas de interés en la ALU.
-
-Una a destacar es el Op code que se conectara al Mux de selección de Resultados, previo al ingreso de la operación cada operación esta codificada, y como son 5 operaciones el número de bits de entrada es de 3, una vez ingresado la entrada esto llevara al modulo respectivo y como es claro cada modulo opera bajo una lógica de estados diferente.
-
-Después de eso cada módulo operara bajo una lógica diferente y su resultado podra variar de numero de bits en la entrada como se observó en la práctica 01 con el multiplicador de 4 bits, sin embargo se agregaron dos condiciones de entrada que son el overflow y el zero encerrados en el recuadro llamado Comparador de banderas. Se determinara si la entrada es mayor a 5 bits y de ser asi se activara el overflow para abarcar mas bits para representar la entrada, y en caso de ser 0 solo se activara zero.
-
-Con los datos guardados se guardaran en el registros de resultados donde luego seran representados en las salidas de ALU para dar por determinado el ciclo de las operaciones.
-
 2. [Simulaciones](#simulaciones)
 3. [Implementación](#implementación)
 4. [Conclusiones](#conclusiones)
@@ -118,8 +90,79 @@ La salida `Y[7:0]` muestra el resultado de la operación, acompañado de las ban
 > **Nota:** Los resultados negativos o truncados se deben a las limitaciones propias de una ALU de 4 bits.  
 > En hardware real, estas limitaciones se interpretan mediante el uso de banderas (`overflow`, `zero`) y la representación en **complemento a dos**.
 
-
 ## Implementación
+
+Se diseñó e implementó una **Unidad Aritmético-Lógica (ALU) de 4 bits** en lenguaje **Verilog HDL**, utilizando el entorno **Vivado Design Suite** y una **FPGA Zybo Z7**.
+
+Además de la simulación digital, el diseño fue implementado físicamente en la FPGA, empleando **interruptores (switches)** como entradas y **LEDs** como salidas, para la verificación visual de los resultados.
+
+El sistema fue desarrollado con el objetivo de **ejecutar operaciones aritméticas y lógicas básicas** entre dos operandos A y B de 4 bits cada uno, estos controlados mediante un código de operación (`opcode`). La ALU permite realizar las siguientes operaciones:
+
+| Opcode | Operación | Descripción |
+|:-------:|------------|-------------|
+| `000` | ADD | Suma A + B |
+| `001` | SUB | Resta A – B |
+| `010` | XOR | Operación lógica XOR bit a bit |
+| `011` | SHL | Desplazamiento lógico a la izquierda |
+| `100` | MUL | Multiplicación secuencial de 4 bits |
+
+El diseño está estructurado de forma jerárquica, compuesta por módulos especializados:
+
+| Módulo | Función |
+|--------|----------|
+| `adder4_if` | Interfaz para la suma de 4 bits |
+| `sub4_if` | Interfaz para la resta con detección de overflow |
+| `xor4_if` | XOR bit a bit |
+| `shl4_if` | Desplazamiento lógico a la izquierda |
+| `mul4_if` | Multiplicador secuencial de 4 bits |
+| `alu4` | Módulo principal que selecciona y controla las operaciones |
+
+Se manejan las siguientes señales de control en la ALU:
+
+| Señal | Tipo | Descripción |
+|-------|------|--------------|
+| `clk` | Entrada | Señal de reloj |
+| `rst` | Entrada | Reinicio del sistema (botón de la FPGA) |
+| `init` | Entrada | Activa la ejecución de la operación (botón de la FPGA) |
+| `A`, `B` | Entrada | Operandos de 4 bits, controlados por switches |
+| `opcode` | Entrada | Código de operación de 3 bits (seleccionado con switches) |
+| `Y` | Salida | Resultado (8 bits), mostrado por LEDs |
+| `overflow` | Salida | LED indicador de desbordamiento |
+| `zero` | Salida | LED indicador de resultado nulo |
+
+Se creó un archivo de restricciones **(`.xdc`)** para asignar los pines de la FPGA.  
+Se usaron los siguientes:
+
+---
+
+#### Entradas y salidas activas
+
+| Tipo de señal | Puerto lógico | Conector físico | Descripción |
+|----------------|----------------|------------------|--------------|
+| **Reloj (Clock)** | `clk` | Pin K17 | Señal del reloj del sistema |
+| **Botón de reinicio** | `rst` | BTN0 | Reinicio general |
+| **Botón de inicio** | `init` | BTN1 | Inicialización del proceso |
+| **Interruptores (opcode)** | `opcode[0..2]` | SW1–SW3 | Selección de operación ALU |
+| **LEDs de estado** | `done` | LED0 | Indicación de finalización y ocupación |
+| **Salidas de resultado (Y[0..7])** | `Y[7:0]` | Pmod **JA** | Resultado de la ALU (8 bits) |
+| **Entradas A[0..3]** | `A[3:0]` | Pmod **JC (pines 1–4)** | Operando A |
+| **Entradas B[0..3]** | `B[3:0]` | Pmod **JC (pines 5–8)** | Operando B |
+| **Indicador de overflow** | `overflow` | Pmod **JD (pin 1)** | Bandera de sobreflujo |
+| **Indicador de zero** | `zero` | Pmod **JD (pin 2)** | Bandera de resultado nulo |
+
+---
+
+Se realizó un **video demostrativo** del funcionamiento físico de la ALU implementada en la **FPGA Zybo Z7**, en el cual se evidencia el correcto desempeño del sistema ante diferentes combinaciones de entrada y operaciones seleccionadas mediante los switches. 
+
+📹 [Ver video de la implementación física](https://drive.google.com/drive/folders/1szaWoAyvcXpJeWOB_dEXsCfwK7aWQqe5?usp=sharing)
+
+
+Durante las pruebas, se comprobó que las operaciones aritméticas y lógicas responden correctamente al código de operación configurado por los switches.  
+El uso de módulos jerárquicos permitió una estructura limpia y fácilmente verificable, mientras que la multiplicación secuencial requirió un control temporal adicional para garantizar su correcta sincronización con el reloj del sistema.  
+
+El uso del archivo de restricciones **.xdc** permitió una asignación ordenada de los pines, facilitando la conexión entre los elementos de entrada/salida físicos (switches, botones y LEDs) y los puertos del diseño digital.  
+Las pruebas en hardware confirmaron que las señales de control `done`, `overflow` y `zero` se comportan de manera coherente con la lógica diseñada y con los resultados esperados de simulación.
+
 
 ## Conclusiones
 
